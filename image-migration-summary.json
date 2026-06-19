@@ -1,0 +1,159 @@
+{
+  "movedFiles": 37,
+  "productImageMap": {
+    "Black Forest Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/black-forest-cake.jpg"
+    },
+    "White Forest Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/white-forest-cake.jpg"
+    },
+    "Red Velvet Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/red-velvet-cake.jpg"
+    },
+    "Chocolate Truffle Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/chocolate-truffle-cake.jpg"
+    },
+    "Dutch Chocolate Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/dutch-chocolate-cake.jpg"
+    },
+    "Butterscotch Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/butterscotch-cake.jpg"
+    },
+    "Gourmet Fruit Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/gourmet-fruit-cake.jpg"
+    },
+    "Pineapple Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/pineapple-cake.jpg"
+    },
+    "Kitkat Chocolate Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/kitkat-chocolate-cake.jpg"
+    },
+    "Ferrero Rocher Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/ferrero-rocher-cake.jpg"
+    },
+    "Rasmalai Fusion Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/rasmalai-fusion-cake.jpg"
+    },
+    "Imperial Ice Cream Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/imperial-ice-cream-cake.jpg"
+    },
+    "Bespoke Designer Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/bespoke-designer-cake.jpg"
+    },
+    "Royal Wedding Celebration Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/royal-wedding-celebration-cake.jpg"
+    },
+    "Enchanted Birthday Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/enchanted-birthday-cake.jpg"
+    },
+    "Artisanal Alwar Milk Cake": {
+      "category": "Cakes",
+      "path": "/assets/images/cakes/artisanal-alwar-milk-cake.jpg"
+    },
+    "Gourmet Gulab Jamun": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/gourmet-gulab-jamun.jpg"
+    },
+    "Heritage Rasgulla": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/heritage-rasgulla.jpg"
+    },
+    "Traditional Royal Rasmalai": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/traditional-royal-rasmalai.jpg"
+    },
+    "Prestige Kaju Katli": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/prestige-kaju-katli.jpg"
+    },
+    "Desi Ghee Motichoor Laddu": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/desi-ghee-motichoor-laddu.jpg"
+    },
+    "Royal Heritage Mysore Pak": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/royal-heritage-mysore-pak.jpg"
+    },
+    "Crispy Flaky Soan Papdi": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/crispy-flaky-soan-papdi.jpg"
+    },
+    "Saffron Kalakand Paneer": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/saffron-kalakand-paneer.jpg"
+    },
+    "Vrindavan Saffron Peda": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/vrindavan-saffron-peda.jpg"
+    },
+    "Saffron Shahi Jalebi": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/saffron-shahi-jalebi.jpg"
+    },
+    "Imperial Almond Badam Halwa": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/imperial-almond-badam-halwa.jpg"
+    },
+    "Golden Baked Cheese Roll": {
+      "category": "Sweets",
+      "path": "/assets/images/sweets/golden-baked-cheese-roll.jpg"
+    },
+    "Gourmet Potato Pea Samosa": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/gourmet-potato-pea-samosa.jpg"
+    },
+    "Puff Pastry Veg Slice": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/puff-pastry-veg-slice.jpg"
+    },
+    "Gourmet Paneer Spiced Puff": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/gourmet-paneer-spiced-puff.jpg"
+    },
+    "Italian Herbs Pizza Puff": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/italian-herbs-pizza-puff.jpg"
+    },
+    "Khara Spiced Potato Bun": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/khara-spiced-potato-bun.jpg"
+    },
+    "Spiced Beetroot Veg Cutlet": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/spiced-beetroot-veg-cutlet.jpg"
+    },
+    "Artisan Grilled Club Sandwich": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/artisan-grilled-club-sandwich.jpg"
+    },
+    "Sourdough Butter Garlic Bread": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/sourdough-butter-garlic-bread.jpg"
+    },
+    "Spiced Spring Veg Roll": {
+      "category": "Savouries",
+      "path": "/assets/images/savouries/spiced-spring-veg-roll.jpg"
+    }
+  },
+  "categoryBannerMap": {
+    "Cakes": "/assets/images/cakes/black-forest-cake.jpg",
+    "Sweets": "/assets/images/sweets/gourmet-gulab-jamun.jpg",
+    "Savouries": "/assets/images/savouries/gourmet-potato-pea-samosa.jpg"
+  },
+  "timestamp": "2026-06-19T16:16:36.033Z"
+}
