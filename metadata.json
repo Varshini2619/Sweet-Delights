@@ -1,0 +1,8 @@
+{
+  "name": "Sweet Delights",
+  "description": "Luxurious bakery & confectionery eCommerce platform with elegant 3D visuals, event planning, and an AI bakery assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
