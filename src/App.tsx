@@ -11,6 +11,9 @@ import CartList from './components/CartList';
 import CheckoutModal from './components/CheckoutModal';
 import BlogSection from './components/BlogSection';
 import { Sparkles, Heart, Star, Eye, ShieldAlert, Award, ShieldCheck, ThumbsUp, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { onAuthStateChange, getUserProfile, logoutUser, type UserProfile } from './services/authService';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { db } from './firebase';
 
 export default function App() {
   // Application Page Tab State: 'home' | 'menu' | 'planner' | 'dashboard' | 'admin' | 'checkout'
@@ -43,7 +46,8 @@ export default function App() {
 
   // Authentication State
   const [user, setUser] = useState<User | null>(null);
-  const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('sweet_delights_token'));
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<any>(null);
 
   // Database lists fetched from server
   const [orders, setOrders] = useState<Order[]>([]);
@@ -78,42 +82,64 @@ export default function App() {
     localStorage.setItem('sweet_delights_wishlist', JSON.stringify(wishlistIds));
   }, [wishlistIds]);
 
-  // Fetch active session profile on mount or token update
+  // Firebase Auth State Listener
   useEffect(() => {
-    const fetchProfileAndData = async () => {
-      if (!authToken) {
-        setUser(null);
-        setOrders([]);
-        setPlannerRequests([]);
-        return;
-      }
-
-      try {
-        // Fetch Profile
-        const resProf = await fetch('/api/auth/profile', {
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-        if (resProf.ok) {
-          const dataProf = await resProf.json();
-          setUser(dataProf.user);
-
-          // Once authenticated, load orders & planning requests
+    const unsubscribe = onAuthStateChange(async (firebaseUser) => {
+      setFirebaseUser(firebaseUser);
+      
+      if (firebaseUser) {
+        try {
+          // Get user token for API calls
+          const token = await firebaseUser.getIdToken();
+          setAuthToken(token);
+          
+          // Fetch user profile from Firestore
+          const profile = await getUserProfile(firebaseUser.uid);
+          
+          // Convert UserProfile to User type
+          const user: User = {
+            uid: profile.uid,
+            name: profile.name,
+            email: profile.email,
+            isAdmin: profile.role === 'admin',
+            addresses: [] // Will be fetched separately
+          };
+          
+          setUser(user);
+          
+          // Fetch user addresses from Firestore
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.addresses) {
+              user.addresses = userData.addresses;
+              setUser({ ...user });
+            }
+            if (userData.wishlist) {
+              setWishlistIds(userData.wishlist);
+            }
+          }
+          
+          // Load orders & planning requests
           fetchOrders();
           fetchPlannerRequests();
-          fetchWishlist();
-        } else {
-          // Token expired or invalid
-          handleLogout();
+        } catch (error) {
+          console.error("Error loading user profile:", error);
+          setUser(null);
         }
-      } catch (err) {
-        console.error("Failed to load profile", err);
+      } else {
+        setUser(null);
+        setAuthToken(null);
+        setOrders([]);
+        setPlannerRequests([]);
       }
-    };
+    });
 
-    fetchProfileAndData();
-  }, [authToken]);
+    return () => unsubscribe();
+  }, []);
 
   const fetchOrders = async () => {
+    if (!user) return;
     try {
       const res = await fetch('/api/orders', {
         headers: { 'Authorization': `Bearer ${authToken}` }
@@ -126,6 +152,7 @@ export default function App() {
   };
 
   const fetchPlannerRequests = async () => {
+    if (!user) return;
     try {
       const res = await fetch('/api/planner-requests', {
         headers: { 'Authorization': `Bearer ${authToken}` }
@@ -137,64 +164,30 @@ export default function App() {
     } catch (e) {}
   };
 
-  const fetchWishlist = async () => {
-    try {
-      const res = await fetch('/api/wishlist', {
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setWishlistIds(data.productIds);
-      }
-    } catch (e) {}
-  };
-
   // ==================== AUTH CONTROLS ====================
   const handleLogin = async (credentials: any) => {
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
-      });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem('sweet_delights_token', data.token);
-        setAuthToken(data.token);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
+    // Firebase Auth handles login in Dashboard component
+    // This is kept for compatibility with existing Dashboard props
+    return true;
   };
 
   const handleRegister = async (fields: any) => {
-    try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fields)
-      });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem('sweet_delights_token', data.token);
-        setAuthToken(data.token);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
+    // Firebase Auth handles registration in Dashboard component
+    // This is kept for compatibility with existing Dashboard props
+    return true;
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('sweet_delights_token');
-    setAuthToken(null);
-    setUser(null);
-    setOrders([]);
-    setPlannerRequests([]);
-    setCouponApplied(null);
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setUser(null);
+      setAuthToken(null);
+      setOrders([]);
+      setPlannerRequests([]);
+      setCouponApplied(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   // ==================== BASKET CONTROLS ====================
@@ -254,7 +247,7 @@ export default function App() {
   };
 
   const handleToggleWishlist = async (productId: string) => {
-    if (!authToken) {
+    if (!user) {
       // Local toggle for guests
       setWishlistIds((prev) => {
         const index = prev.indexOf(productId);
@@ -270,19 +263,23 @@ export default function App() {
     }
 
     try {
-      const res = await fetch('/api/wishlist/toggle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ productId })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setWishlistIds(data.productIds);
+      const userRef = doc(db, 'users', user.uid);
+      const isInWishlist = wishlistIds.includes(productId);
+      
+      if (isInWishlist) {
+        await updateDoc(userRef, {
+          wishlist: arrayRemove(productId)
+        });
+        setWishlistIds((prev) => prev.filter(id => id !== productId));
+      } else {
+        await updateDoc(userRef, {
+          wishlist: arrayUnion(productId)
+        });
+        setWishlistIds((prev) => [...prev, productId]);
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error("Error toggling wishlist:", e);
+    }
   };
 
   // ==================== INLINE REVIEW SUMISSIONS ====================

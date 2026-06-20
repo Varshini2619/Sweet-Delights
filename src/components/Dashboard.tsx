@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { User, Order, Product } from '../types';
 import { User as UserIcon, LogIn, UserPlus, MapPin, Package, Heart, Edit3, Key, Plus, Check, Trash2, LogOut } from 'lucide-react';
+import { registerUser, loginUser, logoutUser, getUserProfile, type UserProfile } from '../services/authService';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { db } from '../firebase';
 
 interface DashboardProps {
   user: User | null;
@@ -62,28 +65,32 @@ export default function Dashboard({
       return;
     }
 
-    if (isRegister) {
-      if (!name || !email || !password) {
-        setAuthError("All registration fields are required.");
-        return;
-      }
-      const ok = await onRegister({ name, email, password });
-      if (!ok) {
-        setAuthError("Registration failed. Email credentials may already be active.");
-      } else {
+    try {
+      if (isRegister) {
+        if (!name || !email || !password) {
+          setAuthError("All registration fields are required.");
+          return;
+        }
+        await registerUser(email, password, name);
         setAuthSuccessMsg("Account successfully registered! Logged in automatically.");
-      }
-    } else {
-      if (!email || !password) {
-        setAuthError("Email and Password are required.");
-        return;
-      }
-      const ok = await onLogin({ email, password });
-      if (!ok) {
-        setAuthError("Invalid email or password credentials. (Tip: Admin: admin@sweetdelights.com / admin123  or Guest: user@sweetdelights.com / user123)");
+        // Trigger parent to update user state
+        if (onRegister) {
+          await onRegister({ name, email, password });
+        }
       } else {
+        if (!email || !password) {
+          setAuthError("Email and Password are required.");
+          return;
+        }
+        await loginUser(email, password);
         setAuthSuccessMsg("Successfully logged in!");
+        // Trigger parent to update user state
+        if (onLogin) {
+          await onLogin({ email, password });
+        }
       }
+    } catch (error: any) {
+      setAuthError(error.message || "Authentication failed. Please try again.");
     }
   };
 
@@ -94,37 +101,36 @@ export default function Dashboard({
       alert("Please complete all address entries.");
       return;
     }
+    if (!user) {
+      alert("You must be logged in to add an address.");
+      return;
+    }
     try {
-      const response = await fetch('/api/auth/addresses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          street: addressStreet,
-          city: addressCity,
-          postalCode: addressPostal,
-          phone: addressPhone,
-        }),
+      const newAddress = {
+        id: `addr-${Date.now()}`,
+        street: addressStreet,
+        city: addressCity,
+        postalCode: addressPostal,
+        phone: addressPhone,
+        isDefault: user.addresses.length === 0
+      };
+
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        addresses: arrayUnion(newAddress)
       });
-      const data = await response.json();
-      if (response.ok) {
-        setAddressSuccess("Shipping address registered successfully in cloud index.");
-        // Clear forms
-        setAddressStreet('');
-        setAddressCity('');
-        setAddressPostal('');
-        setAddressPhone('');
-        // trigger reload profile or manually mutate user local
-        if (user) {
-          user.addresses.push(data.address);
-        }
-      } else {
-        alert(data.error || "Failed registration address");
-      }
+
+      setAddressSuccess("Shipping address registered successfully in cloud index.");
+      // Clear forms
+      setAddressStreet('');
+      setAddressCity('');
+      setAddressPostal('');
+      setAddressPhone('');
+      // Update local user state
+      user.addresses.push(newAddress);
     } catch (err) {
-      alert("Failed connection request.");
+      console.error("Error adding address:", err);
+      alert("Failed to register address. Please try again.");
     }
   };
 
@@ -292,7 +298,15 @@ export default function Dashboard({
             </span>
           )}
           <button
-            onClick={onLogout}
+            onClick={async () => {
+              try {
+                await logoutUser();
+                onLogout();
+              } catch (error: any) {
+                console.error("Logout error:", error);
+                alert("Failed to logout. Please try again.");
+              }
+            }}
             className="px-4 py-2 border border-stone-200 dark:border-stone-800 rounded-full text-xs font-bold text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-850 hover:text-rose-600 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />

@@ -177,9 +177,9 @@ export const PRODUCTS: Product[] = [
     description: 'An indulgent, fun-filled fantasy cake wrapped in original crispy chocolate KitKat bars, filled with chocolate paste and topped with dark M&M candies.',
     price: 85,
     rating: 4.88,
-    image: '/assets/images/cakes/KitKat Chocolate Cake.jpg',
+    image: '/assets/images/cakes/kitkat-chocolate-cake.jpg',
     gallery: [
-      '/assets/images/cakes/KitKat Chocolate Cake.jpg'
+      '/assets/images/cakes/kitkat-chocolate-cake.jpg'
     ],
     ingredients: ['Genuis KitKat Bars', 'Belgian Chocolate Cream', 'Spongy cocoa Base', 'Sweet Sprinkles'],
     shelfLife: '4 Days',
@@ -504,9 +504,9 @@ export const PRODUCTS: Product[] = [
     description: 'A crisp, flaky golden pyramid pastry filled with lightly roasted green peas, potatoes, fresh coriander, ginger, and aromatic Himalayan wild spices.',
     price: 8,
     rating: 4.75,
-    image: '/assets/images/savouries/Gourmet Potato & Pea Samosa.jpg',
+    image: '/assets/images/savouries/gourmet-potato-pea-samosa.jpg',
     gallery: [
-      '/assets/images/savouries/Gourmet Potato & Pea Samosa.jpg'
+      '/assets/images/savouries/gourmet-potato-pea-samosa.jpg'
     ],
     ingredients: ['Crispy Pastry Dough (Maida)', 'Finely spiced organic potatoes', 'Fresh sweet green peas', 'Ground Garam Masala'],
     shelfLife: '2 Days',
@@ -589,9 +589,9 @@ export const PRODUCTS: Product[] = [
     description: 'Crunchy, hand-shaped heart patties made of mashed sweet beetroot, potato, and peas, coated in toasted panko crumbs and grilled crisp.',
     price: 11,
     rating: 4.68,
-    image: '/assets/images/savouries/Spiced Beetroot & Veg Cutlet.jpg',
+    image: '/assets/images/savouries/spiced-beetroot-veg-cutlet.jpg',
     gallery: [
-      '/assets/images/savouries/Spiced Beetroot & Veg Cutlet.jpg'
+      '/assets/images/savouries/spiced-beetroot-veg-cutlet.jpg'
     ],
     ingredients: ['Fresh Organic Beetroot', 'Finely crumbs breading', 'Mashed sweet potato', 'In-house Mint Chutney'],
     shelfLife: '2 Days',

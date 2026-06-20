@@ -1,25 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { BookOpen, Calendar, User, MessageSquare, Send, ChevronRight, Hash, ArrowLeft, Clock } from 'lucide-react';
-
-interface Comment {
-  id: string;
-  userName: string;
-  userEmail: string;
-  content: string;
-  createdAt: string;
-}
-
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  image: string;
-  category: string;
-  createdAt: string;
-  comments: Comment[];
-}
+import { BLOG_POSTS, type Comment, type BlogPost } from '../data/blogPosts';
 
 interface BlogSectionProps {
   currentUser: { name?: string; email?: string } | null;
@@ -27,8 +9,7 @@ interface BlogSectionProps {
 }
 
 export default function BlogSection({ currentUser, authToken }: BlogSectionProps) {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('All');
   
@@ -41,52 +22,22 @@ export default function BlogSection({ currentUser, authToken }: BlogSectionProps
   const [commentSuccess, setCommentSuccess] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchPosts();
-  }, [authToken]);
-
-  useEffect(() => {
     if (currentUser) {
       setComName(currentUser.name || '');
       setComEmail(currentUser.email || '');
     }
   }, [currentUser]);
 
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/blog');
-      if (res.ok) {
-        const data = await res.json();
-        setPosts(data.posts || []);
-      }
-    } catch (err) {
-      console.error('Error fetching blog posts:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePostClick = async (post: BlogPost) => {
-    // Re-fetch individual post to get latest comments
-    try {
-      const res = await fetch(`/api/blog/${post.slug}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedPost(data.post);
-        // Scroll to top of detailed view
-        window.scrollTo({ top: 300, behavior: 'smooth' });
-      } else {
-        setSelectedPost(post);
-      }
-    } catch (e) {
-      setSelectedPost(post);
-    }
+  const handlePostClick = (post: BlogPost) => {
+    setSelectedPost(post);
     setCommentSuccess(false);
     setCommentError(null);
     setComContent('');
+    // Scroll to top of detailed view
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
-  const handleCommentSubmit = async (e: React.FormEvent) => {
+  const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPost) return;
     if (!comName.trim() || !comContent.trim()) {
@@ -96,40 +47,31 @@ export default function BlogSection({ currentUser, authToken }: BlogSectionProps
 
     setSubmittingComment(true);
     setCommentError(null);
-    try {
-      const res = await fetch(`/api/blog/${selectedPost.id}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userName: comName.trim(),
-          userEmail: comEmail.trim(),
-          content: comContent.trim(),
-        }),
-      });
+    
+    // Create new comment
+    const newComment: Comment = {
+      id: `comment-${Date.now()}`,
+      userName: comName.trim(),
+      userEmail: comEmail.trim(),
+      content: comContent.trim(),
+      createdAt: new Date().toISOString()
+    };
 
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedPost({
-          ...selectedPost,
-          comments: data.comments,
-        });
-        
-        // Update comments in local posts list as well
-        setPosts(prev => prev.map(p => p.id === selectedPost.id ? { ...p, comments: data.comments } : p));
-        setComContent('');
-        setCommentSuccess(true);
-        setTimeout(() => setCommentSuccess(false), 4000);
-      } else {
-        const data = await res.json();
-        setCommentError(data.error || 'Failed to submit comment.');
-      }
-    } catch (err) {
-      setCommentError('Network error. Please try again later.');
-    } finally {
-      setSubmittingComment(false);
-    }
+    // Update selected post with new comment
+    const updatedPost = {
+      ...selectedPost,
+      comments: [...(selectedPost.comments || []), newComment]
+    };
+
+    setSelectedPost(updatedPost);
+    
+    // Update posts list as well
+    setPosts(prev => prev.map(p => p.id === selectedPost.id ? updatedPost : p));
+    
+    setComContent('');
+    setCommentSuccess(true);
+    setSubmittingComment(false);
+    setTimeout(() => setCommentSuccess(false), 4000);
   };
 
   const getCategories = () => {
@@ -210,12 +152,7 @@ export default function BlogSection({ currentUser, authToken }: BlogSectionProps
         </p>
       </div>
 
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs font-mono text-brand-brown/60 dark:text-stone-400">Pouring hot tea & unlocking chronicles...</p>
-        </div>
-      ) : selectedPost ? (
+      {selectedPost ? (
         
         /* DETAILED ARTICLE SCREEN */
         <div className="max-w-4xl mx-auto">
